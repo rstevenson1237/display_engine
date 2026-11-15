@@ -449,8 +449,8 @@ The tick budget is 4 ms of simulation work per tick, measured in Node, unless a 
 | Phase | What it builds | Size | Model | Windows |
 |---|---|---|---|---|
 | E0 | Repo scaffold and guard rails | S | Sonnet | 1–2 |
-| E1 | Core | M | Opus designs, Sonnet builds | 4–6 |
-| E2 | Content in KDL | M | Opus designs, Sonnet builds | 3–5 |
+| E1 | Core | M | Designed. Sonnet builds | 3–5 |
+| E2 | Content in KDL | M | Designed. Sonnet builds | 2–4 |
 | E3 | Render, assets, artgen bridge | M–L | Opus designs, Sonnet builds | 5–8 |
 | E4 | Input and cameras | M | Sonnet | 3–4 |
 | E5 | Physics and character movement | M–L | Opus for the character body | 4–7 |
@@ -467,9 +467,13 @@ The tick budget is 4 ms of simulation work per tick, measured in Node, unless a 
 | E16 | Effects and graphics performance | M | Sonnet | 4–7 |
 | E17 | Packaging for game repos | M | Sonnet | 3–5 |
 
-The total is roughly 70 to 115 windows. Order: E0 → E1 → E2 → E3 → E4 and E5 → E6 → E7 to E10 in any order → E11.
+The total is roughly 65 to 115 windows. Order: E0 → E1 → E2 → E3 → E4 and E5 → E6 → E7 to E10 in any order → E11.
 After E11, phases E12 to E17 can be reordered to suit the first real game. For example, pull E17 forward to start a
 game repo early.
+
+**Design notes already written.** [The data contract](design/E1-E2-data-contract.md) is the design for E1 and E2, so
+those phases start at the build step. [The artgen generation design](design/A1-A3-artgen-generation.md) specifies
+artgen packages A1 to A3 and the artgen part of E7.
 
 **Work outside this table.** The artgen packages A1 to A6 are built in `image_tools` and sized there. Art for the
 example games is made with artgen: one art direction for this repo, then a batch of recipes per example. It can start
@@ -750,15 +754,14 @@ engine.start();
 
 ## Appendix B. What content files look like
 
-These five files were parsed as KDL version 2 in the section 3 checks. Node and property names are fixed in the E2
-design note.
+These five files parse as KDL version 2. Node and property names follow
+[the data contract](design/E1-E2-data-contract.md), which is the authority where the two differ.
 
 ```kdl
 // content/prefabs/warden.kdl
 prefab "warden" {
-    art-model "warden" bake="load" {
-        vary "coat" "short" "long"
-        vary "height" min=1.6 max=1.9
+    art-model "warden" bake="load" vary=#true {
+        param "height" 1.7
     }
     animator state="idle"
     health hp=60 max=60
@@ -775,9 +778,9 @@ level "crypt-1" {
         ambient "#8090b0" intensity=0.35
     }
     generate "dungeon" seed=42 rooms=8 theme="crypt"
-    spawn "warden" room=3
-    on "trigger-entered" zone="vault" {
-        spawn "warden" count=2 room=5
+    spawn "warden" anchor="room-3"
+    on "trigger-entered" zone="vault" once=#true {
+        spawn "warden" count=2 anchor="room-5"
         play-sound "alarm"
         show-text "vault-alarm"
     }
@@ -800,5 +803,7 @@ axis2 "move" {
 }
 
 // content/text/en.kdl
-text "vault-alarm" "The vault is open. Something heard it."
+language "en" {
+    text "vault-alarm" "The vault is open. Something heard it."
+}
 ```
