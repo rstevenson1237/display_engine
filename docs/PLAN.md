@@ -1,8 +1,8 @@
 # Display Engine: design and build plan
 
-- **Purpose:** Approve or correct the design of a reusable three.js game engine, then build it phase by phase from this plan.
-- **For:** The repo owner, who approves the plan, and the Claude Opus and Sonnet sessions that will build each phase.
-- **Version:** Draft 4, 2026-11-15. Status: proposal, waiting for approval of the new parts. No engine code exists yet.
+- **Purpose:** Build a reusable three.js game engine phase by phase from this approved design.
+- **For:** The Claude Opus and Sonnet sessions that will build each phase, and the repo owner who approved the design.
+- **Version:** Draft 4, 2026-11-15. Status: approved on 2026-11-15. No engine code exists yet.
 - **Instead of this:** For how art is made, read the [artgen README in image_tools](https://github.com/rstevenson1237/image_tools/blob/main/README.md). This plan only covers how the engine uses that art.
 
 ## Contents
@@ -44,12 +44,8 @@ Each kit is proved by a small example game.
 The engine is useful if you stop early: after E6 you can build a small game by hand, and after E11 a full first-person
 game.
 
-**What you need to do.**
-
-1. Approve or change decisions 11 to 13 in [section 4](#4-decisions). They cover KDL, generated assets and the artgen
-   work this needs.
-2. Read [section 9](#9-beyond-your-brief-what-was-added-and-what-to-consider). Say whether to drop anything I added,
-   and whether to pull in anything I only listed.
+**Status.** You approved all thirteen decisions in [section 4](#4-decisions) on 2026-11-15. The additions in
+[section 9.1](#91-added-to-the-plan) stay in the plan unless you remove them. The next step is phase E0.
 
 **Qualifications you should know.**
 
@@ -141,11 +137,11 @@ Current library versions on npm, checked today: three 0.187.0, `@dimforge/rapier
 9. **Toolchain.** The same as `image_tools`: TypeScript 5, Vite 6, Vitest 4, Node 22, Playwright for browser checks.
 10. **Proof.** Three example games, with three rough slices built early in E6.
 
-### 4.2. New decisions that need your approval
+### 4.2. Decisions you approved after draft 4
 
 #### Decision 11. All content is KDL version 2, checked and compiled at build time
 
-- **Recommended:** content files are checked against schemas that the engine modules register, then compiled into one
+- **Chosen:** content files are checked against schemas that the engine modules register, then compiled into one
   data file that the game loads. In development, a changed file reloads in the running game. Parser: `@bgotink/kdl`.
 - **Alternative:** parse KDL in the browser every time the game starts.
 - **Why:** a mistake is caught by a command, with the file, line and column, before anyone runs the game. The game
@@ -153,7 +149,7 @@ Current library versions on npm, checked today: three 0.187.0, `@dimforge/rapier
 
 #### Decision 12. The repo holds recipes, and each asset says when it is generated
 
-- **Recommended:** every asset is a recipe plus a seed. Each asset names one of two times to generate it. *Build*
+- **Chosen:** every asset is a recipe plus a seed. Each asset names one of two times to generate it. *Build*
   makes a file when the game is built: fast to start, one fixed result. *Load* makes it in a background worker when a
   level loads, and caches it: slower the first time, but one recipe gives many variants. Generated files are build
   outputs. Committing them is optional.
@@ -163,7 +159,7 @@ Current library versions on npm, checked today: three 0.187.0, `@dimforge/rapier
 
 #### Decision 13. artgen gains a generation library and wider 3D coverage
 
-- **Recommended:** approve the work packages in section 7.3 as requests on `image_tools`. The engine does not wait
+- **Chosen:** approve the work packages in section 7.3 as requests on `image_tools`. The engine does not wait
   for them. Each one unlocks a named engine feature when it lands.
 - **Alternative:** the engine carries its own mesh and texture generator.
 - **Why:** artgen already has the art direction, the palette, the meshing, the rigs and the review loop. A second
